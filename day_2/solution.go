@@ -50,17 +50,17 @@ func part1() *[]string {
 		round := scanner.Text()
 		roundscore := 0
 
-		if contains(win, round) {
+		if utils.Contains(win, round) {
 			roundscore = 6 + getBonusScore(round)
 			score += roundscore
 		}
 
-		if contains(draw, round) {
+		if utils.Contains(draw, round) {
 			roundscore = 3 + getBonusScore(round)
 			score += roundscore
 		}
 
-		if contains(loss, round) {
+		if utils.Contains(loss, round) {
 			roundscore = 0 + getBonusScore(round)
 			score += roundscore
 		}
@@ -135,16 +135,6 @@ func getBonusScore(round string) int {
 
 	sign := strings.Split(round, " ")[1]
 	return bonus[sign]
-}
-
-func contains(list []string, element string) bool {
-	for _, e := range list {
-		if e == element {
-			return true
-		}
-	}
-
-	return false
 }
 
 func getWinningSignScore(openentSign int) int {
