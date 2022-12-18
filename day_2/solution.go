@@ -9,17 +9,25 @@ import (
 	"strings"
 )
 
+const (
+	rock     int = 1
+	paper    int = 2
+	scissors int = 3
+	loss     int = 0
+	draw     int = 3
+	win      int = 6
+)
+
 func main() {
 
-	// A : X -> rock
-	// B : Y -> papers
-	// C : Z -> scissors
+	solution1 := part1()
+	solution2 := part2()
+	solutions := append(*solution1, *solution2...)
 
-	solutions := readInput()
-	utils.PrintSolution(solutions)
+	utils.PrintSolution(&solutions)
 }
 
-func readInput() *[]string {
+func part1() *[]string {
 	f, err := os.Open("input.txt")
 	if err != nil {
 		log.Printf("unable to read file\n%s", err)
@@ -62,7 +70,62 @@ func readInput() *[]string {
 		log.Fatal(err)
 	}
 
-	return &[]string{fmt.Sprintf("score: %d", score)}
+	return &[]string{fmt.Sprintf("part 1 score: %d", score)}
+}
+
+func part2() *[]string {
+	f, err := os.Open("input.txt")
+	if err != nil {
+		log.Printf("unable to read file\n%s", err)
+	}
+
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+
+	// A -> rock
+	// B -> papers
+	// C -> scissors
+
+	// X -> loss
+	// Y -> draw
+	// Z -> win
+
+	signs := map[string]int{"A": rock, "B": paper, "C": scissors}
+	outcomes := map[string]int{"X": loss, "Y": draw, "Z": win}
+
+	score := 0
+
+	for scanner.Scan() {
+		round := scanner.Text()
+
+		split := strings.Split(round, " ")
+		oponentSign, outcome := split[0], split[1]
+
+		ownSignScore := 0
+
+		if outcomes[outcome] == loss {
+			ownSignScore = getLosingSignScore(signs[oponentSign])
+		}
+
+		if outcomes[outcome] == draw {
+			ownSignScore = signs[oponentSign]
+		}
+
+		if outcomes[outcome] == win {
+			ownSignScore = getWinningSignScore(signs[oponentSign])
+		}
+
+		roundScore := outcomes[outcome] + ownSignScore
+		score += roundScore
+
+		//fmt.Printf("round score: %d\n"+"total score %d\n", roundScore, score)
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return &[]string{fmt.Sprintf("part 2 score: %d", score)}
 }
 
 func getBonusScore(round string, bonus map[string]int) int {
@@ -78,4 +141,28 @@ func contains(list []string, element string) bool {
 	}
 
 	return false
+}
+
+func getWinningSignScore(openentSign int) int {
+	if openentSign == rock {
+		return paper
+	}
+
+	if openentSign == paper {
+		return scissors
+	}
+
+	return rock
+}
+
+func getLosingSignScore(openentSign int) int {
+	if openentSign == rock {
+		return scissors
+	}
+
+	if openentSign == paper {
+		return rock
+	}
+
+	return paper
 }
