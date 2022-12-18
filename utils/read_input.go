@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
-func ReadInput(output string) {
-	f, err := os.Create("output.txt")
+func ReadInput(filePath string) []string {
+	data, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer f.Close()
+	return strings.Split(string(data), "\n")
+}
 
-	if _, err := f.WriteString(output); err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Wrote the solutions to output.txt file")
+func PrintInput(filePath string) {
+	input := ReadInput(filePath)
+	fmt.Print(input)
 }
