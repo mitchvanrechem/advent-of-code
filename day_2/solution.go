@@ -36,11 +36,13 @@ func part1() *[]string {
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
 
+	// A : X -> rock
+	// B : Y -> papers
+	// C : Z -> scissors
+
 	win := []string{"A Y", "B Z", "C X"}
 	loss := []string{"A Z", "B X", "C Y"}
 	draw := []string{"A X", "B Y", "C Z"}
-
-	bonus := map[string]int{"X": 1, "Y": 2, "Z": 3}
 
 	score := 0
 
@@ -49,17 +51,17 @@ func part1() *[]string {
 		roundscore := 0
 
 		if contains(win, round) {
-			roundscore = 6 + getBonusScore(round, bonus)
+			roundscore = 6 + getBonusScore(round)
 			score += roundscore
 		}
 
 		if contains(draw, round) {
-			roundscore = 3 + getBonusScore(round, bonus)
+			roundscore = 3 + getBonusScore(round)
 			score += roundscore
 		}
 
 		if contains(loss, round) {
-			roundscore = 0 + getBonusScore(round, bonus)
+			roundscore = 0 + getBonusScore(round)
 			score += roundscore
 		}
 
@@ -128,7 +130,9 @@ func part2() *[]string {
 	return &[]string{fmt.Sprintf("part 2 score: %d", score)}
 }
 
-func getBonusScore(round string, bonus map[string]int) int {
+func getBonusScore(round string) int {
+	bonus := map[string]int{"X": rock, "Y": paper, "Z": scissors}
+
 	sign := strings.Split(round, " ")[1]
 	return bonus[sign]
 }
