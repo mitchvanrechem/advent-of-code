@@ -2,51 +2,25 @@ package main
 
 import (
 	"advent-of-code-2022/utils"
-	"bufio"
 	"fmt"
-	"log"
-	"os"
 	"sort"
 	"strconv"
 )
 
 func main() {
 	fmt.Println("Hello, advent of code 2022!")
-	solutions := readInventory()
+	inputLines := utils.ReadInputAsStrings("input.txt")
 
+	solutions := readInventories(inputLines)
 	utils.PrintSolution(solutions)
 }
 
-func readInventory() *[]string {
-	f, err := os.Open("input.txt")
-	if err != nil {
-		log.Printf("unable to read file: %s", err)
-	}
-
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
-
+func readInventories(calories_entries []string) *[]string {
 	calories_max := 0
 	current_calories := 0
 	elves := make([]int, 0)
 
-	// scanner.Split() can be called with a SplitFunc to split up data:
-	// scanner.Split(bufio.ScanWords)
-	// scanner.Split(bufio.ScanRunes)
-
-	// By default scanner.Scan() will split the data similar to bufio.ScanLines
-
-	// Any Custom split function can be written as long as it has the following signature:
-	// func(data []byte, atEOF bool) (advance int, token []byte, err error)
-
-	for scanner.Scan() {
-
-		// While scanning the data can be output as: 
-		// a string with .Text()
-		// a bytes slice with .Bytes()
-
-		calories_entry := scanner.Text()
-
+	for _, calories_entry := range calories_entries {
 		if calories_entry == "" {
 			elves = append(elves, current_calories)
 			//fmt.Printf("elf %d, with %d calories\n", len(elves), current_calories)
@@ -61,10 +35,6 @@ func readInventory() *[]string {
 			current_calories += calories
 		}
 
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
 	}
 
 	sort.Ints(elves)

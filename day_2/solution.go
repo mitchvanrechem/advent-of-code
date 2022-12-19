@@ -2,10 +2,7 @@ package main
 
 import (
 	"advent-of-code-2022/utils"
-	"bufio"
 	"fmt"
-	"log"
-	"os"
 	"strings"
 )
 
@@ -19,22 +16,16 @@ const (
 )
 
 func main() {
+	inputLines := utils.ReadInputAsStrings("input.txt")
 
-	solution1 := part1()
-	solution2 := part2()
+	solution1 := part1(inputLines)
+	solution2 := part2(inputLines)
 	solutions := append(*solution1, *solution2...)
 
 	utils.PrintSolution(&solutions)
 }
 
-func part1() *[]string {
-	f, err := os.Open("input.txt")
-	if err != nil {
-		log.Printf("unable to read file\n%s", err)
-	}
-
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
+func part1(rounds []string) *[]string {
 
 	// A : X -> rock
 	// B : Y -> papers
@@ -46,8 +37,7 @@ func part1() *[]string {
 
 	score := 0
 
-	for scanner.Scan() {
-		round := scanner.Text()
+	for _, round := range rounds {
 		roundscore := 0
 
 		if utils.Contains(win, round) {
@@ -68,22 +58,10 @@ func part1() *[]string {
 		//fmt.Printf("round score: %d\n"+"total score %d\n", roundscore, score)
 	}
 
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-
 	return &[]string{fmt.Sprintf("part 1 score: %d", score)}
 }
 
-func part2() *[]string {
-	f, err := os.Open("input.txt")
-	if err != nil {
-		log.Printf("unable to read file\n%s", err)
-	}
-
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
-
+func part2(rounds []string) *[]string {
 	// A -> rock
 	// B -> papers
 	// C -> scissors
@@ -97,9 +75,7 @@ func part2() *[]string {
 
 	score := 0
 
-	for scanner.Scan() {
-		round := scanner.Text()
-
+	for _, round := range rounds {
 		split := strings.Split(round, " ")
 		oponentSign, outcome := split[0], split[1]
 
@@ -121,10 +97,6 @@ func part2() *[]string {
 		score += roundScore
 
 		//fmt.Printf("round score: %d\n"+"total score %d\n", roundScore, score)
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
 	}
 
 	return &[]string{fmt.Sprintf("part 2 score: %d", score)}

@@ -14,16 +14,7 @@ func ReadInputAsStrings(filePath string) []string {
 		log.Fatal(err)
 	}
 
-	inputLines := strings.Split(string(data), "\n")
-	lines := []string{}
-
-	for _, inputLine := range inputLines {
-		if inputLine != "" {
-			lines = append(lines, inputLine)
-		}
-	}
-
-	return lines
+	return strings.Split(string(data), "\n")
 }
 
 func ReadInputAsBytes(filePath string) [][]byte {
@@ -37,9 +28,21 @@ func ReadInputAsBytes(filePath string) [][]byte {
 
 	byteLines := [][]byte{}
 
+	// scanner.Split() can be called with a SplitFunc to split up data:
+	// scanner.Split(bufio.ScanWords)
+	// scanner.Split(bufio.ScanRunes)
+
+	// By default scanner.Scan() will split the data similar to bufio.ScanLines
+
+	// Any Custom split function can be written as long as it has the following signature:
+	// func(data []byte, atEOF bool) (advance int, token []byte, err error)
+
+	// While scanning the data can be output as:
+	// a string with .Text()
+	// a bytes slice with .Bytes()
+
 	for scanner.Scan() {
-		line := scanner.Bytes()
-		byteLines = append(byteLines, line)
+		byteLines = append(byteLines, scanner.Bytes())
 	}
 
 	if err := scanner.Err(); err != nil {
