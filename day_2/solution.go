@@ -77,20 +77,20 @@ func part2(rounds []string) *[]string {
 
 	for _, round := range rounds {
 		split := strings.Split(round, " ")
-		oponentSign, outcome := split[0], split[1]
+		opponentSign, outcome := split[0], split[1]
 
 		ownSignScore := 0
 
 		if outcomes[outcome] == loss {
-			ownSignScore = getLosingSignScore(signs[oponentSign])
+			ownSignScore = getLosingSignScore(signs[opponentSign])
 		}
 
 		if outcomes[outcome] == draw {
-			ownSignScore = signs[oponentSign]
+			ownSignScore = signs[opponentSign]
 		}
 
 		if outcomes[outcome] == win {
-			ownSignScore = getWinningSignScore(signs[oponentSign])
+			ownSignScore = getWinningSignScore(signs[opponentSign])
 		}
 
 		roundScore := outcomes[outcome] + ownSignScore

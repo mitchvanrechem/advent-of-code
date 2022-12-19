@@ -3,7 +3,6 @@ package utils
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 )
@@ -11,7 +10,8 @@ import (
 func ReadInputAsStrings(filePath string) []string {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("unable to read file")
+		panic(err)
 	}
 
 	return strings.Split(string(data), "\n")
@@ -20,7 +20,8 @@ func ReadInputAsStrings(filePath string) []string {
 func ReadInputAsBytes(filePath string) [][]byte {
 	f, err := os.Open(filePath)
 	if err != nil {
-		log.Fatal("unable to read file: ", err)
+		fmt.Println("unable to read file")
+		panic(err)
 	}
 
 	defer f.Close()
@@ -46,7 +47,7 @@ func ReadInputAsBytes(filePath string) [][]byte {
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		fmt.Println("Unable to scan file")
 	}
 
 	return byteLines
