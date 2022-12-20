@@ -5,15 +5,22 @@ import (
 	"fmt"
 )
 
+type Rucksack string
+
 func main() {
 	inputLines := utils.ReadInputAsStrings("input.txt")
 
-	solution1 := part1(inputLines)
+	ruckSacks := parseInput(inputLines)
+	solution1 := part1(ruckSacks)
+	solution2 := part2(ruckSacks)
 
-	utils.PrintSolution(&[]string{fmt.Sprintf("part1: %d", solution1)})
+	utils.PrintSolution(&[]string{
+		fmt.Sprintf("part1: %d", solution1),
+		fmt.Sprintf("part2: %d", solution2),
+	})
 }
 
-func part1(rucksacks []string) int {
+func part1(rucksacks []Rucksack) int {
 	priorityTotal := 0
 
 	for _, rucksack := range rucksacks {
@@ -24,7 +31,40 @@ func part1(rucksacks []string) int {
 	return priorityTotal
 }
 
-func getMisplacedItem(rucksack string) rune {
+func part2(rucksacks []Rucksack) int {
+	priorityTotal := 0
+
+	for i := 0; i < len(rucksacks); i += 3 {
+		item := getBadge(rucksacks[i], rucksacks[i+1], rucksacks[i+2])
+		fmt.Println(string(item))
+		priorityTotal += determinePriority(item)
+	}
+
+	return priorityTotal
+}
+
+func parseInput(lines []string) []Rucksack {
+	rucksacks := []Rucksack{}
+	for _, line := range lines {
+		rucksacks = append(rucksacks, Rucksack(line))
+	}
+
+	return rucksacks
+}
+
+func getBadge(sack1 Rucksack, sack2 Rucksack, sack3 Rucksack) rune {
+	for _, item := range sack1 {
+		if utils.Contains([]rune(sack2), item) {
+			if utils.Contains([]rune(sack3), item) {
+				return item
+			}
+		}
+	}
+
+	panic("No badge was found in either of the 3 rucksacks")
+}
+
+func getMisplacedItem(rucksack Rucksack) rune {
 	compartment1 := rucksack[:(len(rucksack) / 2)]
 	compartment2 := rucksack[len(rucksack)/2:]
 
