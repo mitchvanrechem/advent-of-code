@@ -21,23 +21,26 @@ type Move struct {
 
 func main() {
 	inputLines := utils.ReadInputAsStrings("input.txt")
-	deck, moves := parseInput(inputLines)
 
-	solution1 := part1(deck, moves)
+	solution1 := part1(inputLines)
+	solution2 := part2(inputLines)
 
 	utils.PrintSolution(&[]string{
 		fmt.Sprintf("part1: %s", solution1),
+		fmt.Sprintf("part2: %s", solution2),
 	})
 }
 
-func part1(deck *CargoDeck, moves *[]Move) string {
-	for _, move := range *moves {
+func part1(inputLines []string) string {
+	deck, moves := parseInput(inputLines)
+
+	for _, move := range moves {
 		sourceStack := deck[move.source]
 		destinationStack := deck[move.destination]
 
 		for i := 0; i < move.amount; i++ {
-			topCrate := removeTopCrate(&sourceStack)
-			destinationStack = append(destinationStack, topCrate)
+			topCrate := removeTopCrates(&sourceStack, 1, false)
+			destinationStack = append(destinationStack, topCrate...)
 		}
 
 		deck[move.source] = sourceStack
@@ -53,20 +56,41 @@ func part1(deck *CargoDeck, moves *[]Move) string {
 	return message
 }
 
-func removeTopCrate(stack *Stack) Crate {
-	stackHeight := len(*stack)
+func part2(inputLines []string) string {
+	deck, moves := parseInput(inputLines)
 
-	topCrate := (*stack)[stackHeight-1]
-	*stack = (*stack)[:stackHeight-1]
+	for _, move := range moves {
+		sourceStack := deck[move.source]
+		destinationStack := deck[move.destination]
 
-	return topCrate
+		topCrates := removeTopCrates(&sourceStack, move.amount, true)
+		destinationStack = append(destinationStack, topCrates...)
+
+		deck[move.source] = sourceStack
+		deck[move.destination] = destinationStack
+	}
+
+	message := ""
+
+	for _, stack := range deck {
+		message += string(stack[len(stack)-1])
+	}
+
+	return message
+}
+
+func removeTopCrates(stack *Stack, crateAmount int, part2 bool) Stack {
+	stackHeight := len(*stack) - crateAmount
+	topCrates := (*stack)[stackHeight:]
+	*stack = (*stack)[:stackHeight]
+
+	return topCrates
 }
 
 func parseMoves(lines []string) []Move {
 	moves := []Move{}
 
 	for _, line := range lines {
-
 		re := regexp.MustCompile("[0-9]+")
 		moveNumbers := re.FindAllString(line, -1)
 
@@ -74,6 +98,8 @@ func parseMoves(lines []string) []Move {
 		source, _ := strconv.Atoi(moveNumbers[1])
 		destination, _ := strconv.Atoi(moveNumbers[2])
 
+		// source - 1 and destination - 1, because stacks are 1 index based
+		// but our arrays are 0 index based
 		move := Move{
 			amount:      amount,
 			source:      source - 1,
@@ -110,7 +136,7 @@ func setCratesPerRow(row string, deck *CargoDeck) {
 	}
 }
 
-func parseInput(lines []string) (*CargoDeck, *[]Move) {
+func parseInput(lines []string) (CargoDeck, []Move) {
 	deck := CargoDeck{}
 	moves := []Move{}
 
@@ -124,5 +150,5 @@ func parseInput(lines []string) (*CargoDeck, *[]Move) {
 		}
 	}
 
-	return &deck, &moves
+	return deck, moves
 }
