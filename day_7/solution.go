@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+const DISK_SPACE = 70_000_000
+const UNUSED_SPACE = 30_000_000
+
 type DirTree struct {
 	root *Dir
 }
@@ -27,9 +30,11 @@ func main() {
 	inputLines := utils.ReadInputAsStrings("input.txt")
 
 	solution1 := part1(inputLines)
+	solution2 := part2(inputLines)
 
 	utils.PrintSolution(&[]string{
 		fmt.Sprintf("part1: %v", solution1),
+		fmt.Sprintf("part2: %v", solution2),
 	})
 }
 
@@ -39,6 +44,50 @@ func part1(inputLines []string) int {
 	_, sumDirSizes := calculateDirSizes(*dirTree.root)
 
 	return sumDirSizes
+}
+
+func part2(inputLines []string) int {
+	dirTree := parseInput(inputLines)
+
+	// Reusing part 1 function to get the total space taken by all dirs, aka
+	// the size of the root folder.
+	totalOccupiedSpace, _ := calculateDirSizes(*dirTree.root)
+	idealSize := UNUSED_SPACE - (DISK_SPACE - totalOccupiedSpace)
+
+	_, targetDirSize := getDirToDelete(*dirTree.root, idealSize)
+
+	return targetDirSize
+}
+
+func getDirToDelete(currentDir Dir, idealSize int) (int, int) {
+	totalDirSize := 0
+	// The max size a single dir to get deleted can be is the total disk space
+	// math.MaxInt would also work
+	closestToIdeal := DISK_SPACE
+
+	for _, file := range currentDir.files {
+		totalDirSize += file.size
+	}
+
+	if currentDir.children != nil {
+		for _, child := range currentDir.children {
+			childDirSize, childClosestToIdeal := getDirToDelete(*child, idealSize)
+			totalDirSize += childDirSize
+
+			if childClosestToIdeal < closestToIdeal {
+				closestToIdeal = childClosestToIdeal
+			}
+		}
+	}
+
+	// Check if current dir is closest to the ideal size:
+	// The dir must be larger than the ideal size to free up enough space
+	// The dir size must be smaller than the previous dir closest to ideal size
+	if totalDirSize > idealSize && totalDirSize < closestToIdeal {
+		closestToIdeal = totalDirSize
+	}
+
+	return totalDirSize, closestToIdeal
 }
 
 func calculateDirSizes(currentDir Dir) (int, int) {
