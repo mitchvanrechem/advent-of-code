@@ -21,6 +21,8 @@ func part1(inputLines []string) int {
 
 	visibleTreeCoordinates := make(map[string]int)
 
+	// Arrays to keep track of the tallest tree in each collumn, of both top
+	// and bottom perspective 
 	var tallestTop []int
 	var tallestBottom []int
 
@@ -29,54 +31,59 @@ func part1(inputLines []string) int {
 		tallestRight := treeRow[len(treeRow)-1]
 
 		for j := range treeRow {
-			leftTree := treeGrid[i][j]
-			topTree := treeGrid[i][j]
-			rightTree := treeGrid[i][len(treeRow)-1-j]
-			bottomTree := treeGrid[len(treeGrid)-1-i][j]
+			leftBorderTree := treeGrid[i][j]
+			topBorderTree := treeGrid[i][j]
+			rightBorderTree := treeGrid[i][len(treeRow)-1-j]
+			bottomBorderTree := treeGrid[len(treeGrid)-1-i][j]
 
 			leftCoordinates := fmt.Sprintf("%d-%d", i, j)
 			topCoordinates := fmt.Sprintf("%d-%d", i, j)
 			rightCoordinates := fmt.Sprintf("%d-%d", i, len(treeRow)-1-j)
 			bottomCoordinates := fmt.Sprintf("%d-%d", len(treeGrid)-1-i, j)
 
-			// Set initial tallest top and bottom tree for collumn with index j
+			// Handle 'edge' case of every single tree on the top and bottom
+			// border being visible by default
 			if i == 0 {
+				// Set initial tallest top and bottom perspective tree for 
+				// collumn with index j.
 				tallestTop = append(tallestTop, treeGrid[0][j])
 				tallestBottom = append(tallestBottom, treeGrid[len(treeGrid)-1][j])
 
-				visibleTreeCoordinates[topCoordinates] = topTree
-				visibleTreeCoordinates[bottomCoordinates] = bottomTree
+				visibleTreeCoordinates[topCoordinates] = topBorderTree
+				visibleTreeCoordinates[bottomCoordinates] = bottomBorderTree
 				continue
 			}
 
+			// Handle 'edge' case of every single tree on the left and right
+			// border being visible by default
 			if j == 0 {
-				visibleTreeCoordinates[leftCoordinates] = leftTree
-				visibleTreeCoordinates[rightCoordinates] = rightTree
+				visibleTreeCoordinates[leftCoordinates] = leftBorderTree
+				visibleTreeCoordinates[rightCoordinates] = rightBorderTree
 				continue
 			}
 
 			// LEFT
-			if leftTree > tallestLeft {
-				tallestLeft = leftTree
-				visibleTreeCoordinates[leftCoordinates] = leftTree
+			if leftBorderTree > tallestLeft {
+				tallestLeft = leftBorderTree
+				visibleTreeCoordinates[leftCoordinates] = leftBorderTree
 			}
 
 			// RIGHT
-			if rightTree > tallestRight {
-				tallestRight = rightTree
-				visibleTreeCoordinates[rightCoordinates] = rightTree
+			if rightBorderTree > tallestRight {
+				tallestRight = rightBorderTree
+				visibleTreeCoordinates[rightCoordinates] = rightBorderTree
 			}
 
 			// TOP
-			if topTree > tallestTop[j] {
-				tallestTop[j] = topTree
-				visibleTreeCoordinates[topCoordinates] = topTree
+			if topBorderTree > tallestTop[j] {
+				tallestTop[j] = topBorderTree
+				visibleTreeCoordinates[topCoordinates] = topBorderTree
 			}
 
 			// BOTTOM
-			if bottomTree > tallestBottom[j] {
-				tallestBottom[j] = bottomTree
-				visibleTreeCoordinates[bottomCoordinates] = bottomTree
+			if bottomBorderTree > tallestBottom[j] {
+				tallestBottom[j] = bottomBorderTree
+				visibleTreeCoordinates[bottomCoordinates] = bottomBorderTree
 			}
 
 		}
