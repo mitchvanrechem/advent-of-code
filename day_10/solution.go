@@ -12,14 +12,19 @@ type Instruction struct {
 	signalStrength int
 }
 
+// The CRT screen is 6x40 screen
+type CrtScreen [6][40]string
+
 func main() {
 	inputLines := utils.ReadInputAsStrings("input.txt")
 	instructions := parseInput(inputLines)
 
 	solution1 := part1(instructions)
+	solution2 := part2(instructions)
 
 	utils.PrintSolution(&[]string{
 		fmt.Sprintf("part1: %v", solution1),
+		fmt.Sprintf("part2: %v", solution2),
 	})
 }
 
@@ -40,6 +45,42 @@ func part1(instructions []Instruction) int {
 	}
 
 	return nthCyclesSignalStrengthSum
+}
+
+func part2(instructions []Instruction) string {
+	// Sprite is 3 pixels wide and is by default at the front of the crt row
+	// this variable represents the middle of the sprite
+	spritePosition := 1
+	crt := CrtScreen{}
+
+	for cycle, instruction := range instructions {
+		spriteIndices := []int{spritePosition - 1, spritePosition, spritePosition + 1}
+		row := cycle / 40
+		pixelIndex := cycle % 40
+
+		if utils.Contains(spriteIndices, pixelIndex) {
+			crt[row][pixelIndex] = "#"
+		} else {
+			crt[row][pixelIndex] = "."
+		}
+
+		spritePosition += instruction.signalStrength
+	}
+
+	return createCRTString(crt)
+}
+
+func createCRTString(crt CrtScreen) string {
+	crtString := "\n"
+
+	for i := range crt {
+		for j := range crt[i] {
+			crtString += crt[i][j]
+		}
+		crtString += "\n"
+	}
+
+	return crtString
 }
 
 func isRelevantCycle(cycle int) bool {
