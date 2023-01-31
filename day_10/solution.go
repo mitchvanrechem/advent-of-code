@@ -55,6 +55,15 @@ func part2(instructions []Instruction) string {
 
 	for cycle, instruction := range instructions {
 		spriteIndices := []int{spritePosition - 1, spritePosition, spritePosition + 1}
+
+		// Cycle in part 2 is zero based indexed, as it aligns with the zero
+		// based indexing of the crt pixels in a row 0-39. As per cycle a pixel
+		// is checked e.g. during the 4th cycle (cycle=3), the pixel index 3 is
+		// checked.
+
+		// A row has 40 pixels, at the 41st cycle (cycle=40) the first pixel of
+		// the second row is drawn. Dividing and taking the modulo of cycle
+		// result respectively in the row index and pixel index on that row.
 		row := cycle / 40
 		pixelIndex := cycle % 40
 
