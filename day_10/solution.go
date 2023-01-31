@@ -13,7 +13,7 @@ type Instruction struct {
 }
 
 // The CRT screen is 6x40 screen
-type CrtScreen [6][40]string
+type CrtScreen [6][40]bool
 
 func main() {
 	inputLines := utils.ReadInputAsStrings("input.txt")
@@ -58,11 +58,8 @@ func part2(instructions []Instruction) string {
 		row := cycle / 40
 		pixelIndex := cycle % 40
 
-		if utils.Contains(spriteIndices, pixelIndex) {
-			crt[row][pixelIndex] = "#"
-		} else {
-			crt[row][pixelIndex] = "."
-		}
+		// If drawn, pixel set to true; If not drawn , pixel set to false.
+		crt[row][pixelIndex] = utils.Contains(spriteIndices, pixelIndex)
 
 		spritePosition += instruction.signalStrength
 	}
@@ -75,7 +72,11 @@ func createCRTString(crt CrtScreen) string {
 
 	for i := range crt {
 		for j := range crt[i] {
-			crtString += crt[i][j]
+			if crt[i][j] {
+				crtString += "#"
+			} else {
+				crtString += "."
+			}
 		}
 		crtString += "\n"
 	}
