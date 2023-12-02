@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Completely unnecessary feature, but wanted to try out writing to a file in GO
 func PrintSolution(solutions *[]string) {
 	output := strings.Join(*solutions, "\n")
 

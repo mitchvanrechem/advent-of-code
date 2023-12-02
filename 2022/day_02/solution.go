@@ -109,12 +109,12 @@ func getBonusScore(round string) int {
 	return bonus[sign]
 }
 
-func getWinningSignScore(openentSign int) int {
-	if openentSign == rock {
+func getWinningSignScore(opponentSign int) int {
+	if opponentSign == rock {
 		return paper
 	}
 
-	if openentSign == paper {
+	if opponentSign == paper {
 		return scissors
 	}
 
